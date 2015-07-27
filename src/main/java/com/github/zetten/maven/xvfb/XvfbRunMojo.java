@@ -28,7 +28,6 @@ import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -104,7 +103,9 @@ public class XvfbRunMojo extends AbstractXvfbMojo {
 			}
 		} else {
 			// Otherwise, search for an available display, retrying until one is found in the requested range
-			try (ServerSocket s = getAvailableDisplaySocket()) {
+			ServerSocket s = null;
+			try {
+				s = getAvailableDisplaySocket();
 				String d = ":" + (s.getLocalPort() - xDisplayPortBase);
 				// Close the placeholder socket before launching Xvfb on the same port
 				s.close();
@@ -113,6 +114,14 @@ public class XvfbRunMojo extends AbstractXvfbMojo {
 				return;
 			} catch (IOException e) {
 				getLog().debug("Unable to start Xvfb by searching for a free port.", e);
+			} finally {
+				if (s != null) {
+					try {
+						s.close();
+					} catch (IOException e) {
+						getLog().debug("Error occurred closing server socket", e);
+					}
+				}
 			}
 
 			throw new MojoExecutionException("Could not launch Xvfb.");
@@ -176,7 +185,7 @@ public class XvfbRunMojo extends AbstractXvfbMojo {
 
 		while (n <= xDisplayDefaultNumber + maxDisplaysToSearch) {
 			int port = xDisplayPortBase + n;
-			File lockFile = Paths.get(System.getProperty(TMPDIR_KEY), TMPFILE_PREFIX + port).toFile();
+			File lockFile = new File(System.getProperty(TMPDIR_KEY), TMPFILE_PREFIX + port);
 
 			try {
 				if (!lockFile.exists()) {

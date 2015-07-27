@@ -12,7 +12,7 @@
 
 	<groupId>com.github.zetten</groupId>
 	<artifactId>xvfb-maven-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0.snc1</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Xvfb Maven Plugin</name>
@@ -63,8 +63,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<target>1.7</target>
-					<source>1.7</source>
+					<target>1.6</target>
+					<source>1.6</source>
 				</configuration>
 			</plugin>
 			<plugin>
